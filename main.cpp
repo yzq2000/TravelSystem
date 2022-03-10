@@ -1,6 +1,6 @@
 #include <bits/stdc++.h>
 #include "EasyLog.h"
-#include <Windows.h>
+#include <unistd.h>
 using namespace std;
 #define N 50
 #define DAY 24
@@ -12,22 +12,22 @@ struct City{
     string name;
     double risk;
 } city[N];
-map<string, int> mp;//³ÇÊÐ¶ÔÓ¦µÄ±àºÅ 
+map<string, int> mp;//ï¿½ï¿½ï¿½Ð¶ï¿½Ó¦ï¿½Ä±ï¿½ï¿½ 
 
 struct Edge{
     int to, t;
     string wr;
     double r;
 };
-vector<Edge> edge[N * DAY]; //½«Ò»¸ö³ÇÊÐ²ð³É24¸öµã 
+vector<Edge> edge[N * DAY]; //ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½Ð²ï¿½ï¿½24ï¿½ï¿½ï¿½ï¿½ 
 
 struct P{
     int fa, t;
     string wr;//where, ×´Ì¬ 
 };
-P p[N * DAY][N * DAY];//p[i][j]±íÊ¾iµãÔÚjÊ±¿ÌµÄ¸¸Ç×½Úµã£¬Ê±¿ÌÒÔ¼°×´Ì¬ 
+P p[N * DAY][N * DAY];//p[i][j]ï¿½ï¿½Ê¾iï¿½ï¿½ï¿½ï¿½jÊ±ï¿½ÌµÄ¸ï¿½ï¿½×½Úµã£¬Ê±ï¿½ï¿½ï¿½Ô¼ï¿½×´Ì¬ 
 
-double dp[N * DAY][N * DAY]; //dp[i][j]±íÊ¾iµãÔÚjÊ±¿ÌµÄ×îÐ¡·çÏÕÖµ 
+double dp[N * DAY][N * DAY]; //dp[i][j]ï¿½ï¿½Ê¾iï¿½ï¿½ï¿½ï¿½jÊ±ï¿½Ìµï¿½ï¿½ï¿½Ð¡ï¿½ï¿½ï¿½ï¿½Öµ 
 
 void add_edge(int st_city, int ed_city, int t, string wr, double r){
     edge[st_city].push_back({ed_city, t, wr, r});
@@ -36,7 +36,7 @@ int to_num(string s){
     int h = (s[0] - '0') * 10 + s[1] - '0';
     return h;
 }
-void error(string s){//±¨´í£¬sÊÇ·Ç·¨ÊäÈë 
+void error(string s){//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½sï¿½Ç·Ç·ï¿½ï¿½ï¿½ï¿½ï¿½ 
     lg = "the input _" + s + "_ is invalid";
     EasyLog::Inst() -> Log(lg);
     cout << "\n!!!Error!!!\n_" << s << "_ is invalid input\n" << endl;
@@ -105,7 +105,7 @@ void solve(string name, int st_city, int ed_range, int max_t){
         int ct, t;
         double r;
         bool operator > (const PQ &x) const {
-            return r > x.r;//rÔ½Ð¡£¬ÓÅÏÈ¼¶Ô½´ó£¬ÔÚÓÅÏÈ¶ÓÁÐÖÐÔ½Ôçµ¯³ö 
+            return r > x.r;//rÔ½Ð¡ï¿½ï¿½ï¿½ï¿½ï¿½È¼ï¿½Ô½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¶ï¿½ï¿½ï¿½ï¿½ï¿½Ô½ï¿½çµ¯ï¿½ï¿½ 
         }
     };
     priority_queue <PQ, vector<PQ>, greater<PQ> > q;
@@ -114,11 +114,11 @@ void solve(string name, int st_city, int ed_range, int max_t){
     int ed_city, ed_time;
     double ans_r;
     q.push({st_city, 0, 0});
-    while(!q.empty()){//¶ÑÓÅ»¯£¨priority_queue£© µÄdijkstra 
+    while(!q.empty()){//ï¿½ï¿½ï¿½Å»ï¿½ï¿½ï¿½priority_queueï¿½ï¿½ ï¿½ï¿½dijkstra 
         int u = q.top().ct, t = q.top().t;
         double r = q.top().r;
         q.pop();
-        if(u >= ed_range * DAY && u < ed_range * DAY + DAY) {// ÖÕµã·¶Î§ 
+        if(u >= ed_range * DAY && u < ed_range * DAY + DAY) {// ï¿½Õµã·¶Î§ 
             flag = true;
             ed_city = u, ed_time = t;
             ans_r = r;
@@ -136,13 +136,13 @@ void solve(string name, int st_city, int ed_range, int max_t){
             }
         }
     }
-    if(!flag){//ÏÞ¶¨Ê±¼äÄÚÎÞ·¨Íê³É 
+    if(!flag){//ï¿½Þ¶ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½Þ·ï¿½ï¿½ï¿½ï¿½ 
         cout << "\n" << name << " cannot reach " << city[ed_range].name << " from " << city[st_city / DAY].name << " within the limited time" << endl;
         lg = name + " cannot reach " + city[ed_range].name + " from " + city[st_city / DAY].name + " within the limited time";
         EasyLog::Inst() -> Log(lg);
     }
     else{
-        struct ANS{//¼ÇÂ¼Â·¾¶µÄÊý¾Ý½á¹¹ 
+        struct ANS{//ï¿½ï¿½Â¼Â·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý½á¹¹ 
             string st_city, ed_city, wr;
             int st_time, ed_time;
         };
@@ -167,9 +167,9 @@ void solve(string name, int st_city, int ed_range, int max_t){
             cout << u.wr << ", " << u.st_time << ":00 - " << u.ed_time << ":00, from " << u.st_city << " to " << u.ed_city <<endl;
         }
         for(int i = st_city % DAY; !AnsQ.empty(); i = (i + 1) % DAY){
-            if(i == AnsQ.front().st_time){//×´Ì¬ÊÇÔÚ½»Í¨¹¤¾ßÉÏ 
+            if(i == AnsQ.front().st_time){//×´Ì¬ï¿½ï¿½ï¿½Ú½ï¿½Í¨ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 
                 for(; ; i = (i + 1) % DAY){
-                    Sleep(500);
+                    sleep(500);
                     lg = to_string(i) + ":00, " + name + " is in " + AnsQ.front().wr + ", from " + AnsQ.front().st_city + " to " + AnsQ.front().ed_city;
                     EasyLog::Inst() -> Log(lg);
                     cout << i << ":00, " << name << " is in " << AnsQ.front().wr << ", from " << AnsQ.front().st_city << " to " << AnsQ.front().ed_city << endl;
@@ -177,14 +177,14 @@ void solve(string name, int st_city, int ed_range, int max_t){
                 }
                 AnsQ.pop();
             }
-            else{//×´Ì¬ÊÇÔÚ³ÇÊÐÀï 
-                Sleep(500);
+            else{//×´Ì¬ï¿½ï¿½ï¿½Ú³ï¿½ï¿½ï¿½ï¿½ï¿½ 
+                sleep(500);
                 lg = to_string(i) + ":00, " + name + " is in " + AnsQ.front().st_city;
                 EasyLog::Inst() -> Log(lg);
                 cout << i << ":00, " << name << " is in " << AnsQ.front().st_city << endl;
             }
-            if(AnsQ.empty()) {//µ½´ï 
-                Sleep(500);
+            if(AnsQ.empty()) {//ï¿½ï¿½ï¿½ï¿½ 
+                sleep(500);
                 lg = to_string(i) + ":00, " + name + " arrives in " + city[ed_range].name;
                 EasyLog::Inst() -> Log(lg);
                 cout << i << ":00, " << name << " arrives in " << city[ed_range].name << endl;
@@ -200,20 +200,20 @@ void Init(){
     scanf("%*s%*s%d%*s", &n);
     lg = "there are " + to_string(n) + " cities";
     EasyLog::Inst() -> Log(lg);
-    for(int i = 1; i <= n; i++){//ÊäÈë³ÇÊÐ 
+    for(int i = 1; i <= n; i++){//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 
         cin >> city[i].risk >> city[i].name;
         lg = "the risk of " + city[i].name + " is " + to_string(city[i].risk);
         EasyLog::Inst() -> Log(lg);
         mp[city[i].name] = i;
     }
-    for(int i = 1; i <= n; i++){//½«Ò»¸ö³ÇÊÐ»®·ÖÎª24¸öÊ±¿Ì¶ÔÓ¦µÄ24¸öµã£¬Ê¹Ã¿¸öµã¶¼¾ßÓÐÊ±¿ÕÌØÐÔ 
-        for(int j = 0; j < DAY; j++){//¼ÙÈçµã±àºÅÎªNode£¬Ôò Node/DAY Îª³ÇÊÐ±àºÅ£¬Node%DAYÎªÊ±¿Ì 
+    for(int i = 1; i <= n; i++){//ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½Ð»ï¿½ï¿½ï¿½Îª24ï¿½ï¿½Ê±ï¿½Ì¶ï¿½Ó¦ï¿½ï¿½24ï¿½ï¿½ï¿½ã£¬Ê¹Ã¿ï¿½ï¿½ï¿½ã¶¼ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 
+        for(int j = 0; j < DAY; j++){//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÎªNodeï¿½ï¿½ï¿½ï¿½ Node/DAY Îªï¿½ï¿½ï¿½Ð±ï¿½Å£ï¿½Node%DAYÎªÊ±ï¿½ï¿½ 
             add_edge(i * DAY + j, i * DAY + (j + 1) % DAY, 1, city[i].name, city[i].risk);
         }
     }
-    read(cnt_flight, risk_flight, "flight");//¶ÁÈëº½°àÊ±¿Ì±í 
-    read(cnt_train, risk_train, "train");//¶ÁÈëÁÐ³µÊ±¿Ì±í 
-    read(cnt_bus, risk_bus, "bus");//¶ÁÈë°ÍÊ¿Ê±¿Ì±í 
+    read(cnt_flight, risk_flight, "flight");//ï¿½ï¿½ï¿½ëº½ï¿½ï¿½Ê±ï¿½Ì±ï¿½ 
+    read(cnt_train, risk_train, "train");//ï¿½ï¿½ï¿½ï¿½ï¿½Ð³ï¿½Ê±ï¿½Ì±ï¿½ 
+    read(cnt_bus, risk_bus, "bus");//ï¿½ï¿½ï¿½ï¿½ï¿½Ê¿Ê±ï¿½Ì±ï¿½ 
 }
 void read(int &cnt, int R, string wr){ 
     scanf("%*s%*s%*s%*s%*s");
